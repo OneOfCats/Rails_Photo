@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   match '/premium', to: 'static_pages#premium', via: 'get'
   #match '/admin', to: 'admin_pages#error', via: 'get'
 
+  post '/queue_images/slice_by_rectangle' => 'queue_images#slice_by_rectangle'
 
   root "static_pages#home"
   authenticate :admin do

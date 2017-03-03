@@ -12,12 +12,13 @@
             <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#upload-image">Upload image</a></li>
               <li><a data-toggle="tab" href="#my-images">My images</a></li>
+              <li><a data-toggle="tab" href="#slice-image">Slice image</a></li>
             </ul>
           <% end %>
           <div class="tab-content">
             <div id="upload-image" class="tab-pane fade in active">
               <%= f.label "Your image:" %>
-              <%= f.file_field :content_image %>
+              <%= f.file_field :content_image, accept: 'image/png,image/jpg,image/jpeg' %>
             </div>
             <div id="my-images" class="tab-pane fade overflow-y-scroll">
               <% if @my_pictures %>
@@ -29,6 +30,17 @@
                   </div>
                 <% end %>
               <% end %>
+            </div>
+            <div id="slice-image" class="tab-pane fade">
+              <%= f.label "Your image:" %>
+              <%= link_to 'Upload', "#", id: 'upload-slice-image' %>
+              <div id="canvas-wrapper">
+                <canvas width="0" height="0" id="canvas">Your browser doesn't support this feature</canvas>
+              </div>
+              <div class="cursorX"></div>
+              <div class="cursorY"></div>
+              <%= link_to "Submit", "#", id: 'submit-original-slicing-image', class: 'hidden' %>
+              <img id="crp">
             </div>
           </div>
           <div class="field-line">
@@ -82,6 +94,13 @@
         <%= hidden_field_tag 'queue_image[view_style]', @view_style %>
         <%= hidden_field_tag 'queue_image[style_id]', @active ? @active.id : '', id: 'queue_image_style_id' %>
         <%= hidden_field_tag 'queue_image[content_id]' %>
+      <% end %>
+      <%= form_tag('/queue_images/slice_by_rectangle', method: :post, authenticity_token: true, remote: true, id: "slice-by-rectangle-form") do %>
+        <%= file_field_tag 'original_image[:image]', id: 'slicing-image-field', accept: 'image/png,image/jpg,image/jpeg', class: 'hidden' %>
+        <%= hidden_field_tag 'original_image[:frame_top_x]', nil, id: 'original-image-top-x' %>
+        <%= hidden_field_tag 'original_image[:frame_top_y]', nil, id: 'original-image-top-y' %>
+        <%= hidden_field_tag 'original_image[:frame_bottom_x]', nil, id: 'original-image-bottom-x' %>
+        <%= hidden_field_tag 'original_image[:frame_bottom_y]', nil, id: 'original-image-bottom-y' %>
       <% end %>
       <p>Want a new style? Please email style image to <a href="photopaint.us@gmail.com">photopaint.us@gmail.com</a></p>
     </div>

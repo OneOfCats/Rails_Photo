@@ -2,7 +2,7 @@ class QueueImagesController < ApplicationController
   include WorkerHelper
   include ConstHelper
   before_action :set_queue_image, only: [:show, :edit, :update, :destroy, :visible, :hidden, :like_image, :unlike_image]
-  after_action :verify_authorized, except: [:tag, :loaded]
+  after_action :verify_authorized, except: [:tag, :loaded, :slice_by_rectangle]
 
   def pundit_user
     current_client
@@ -52,7 +52,7 @@ class QueueImagesController < ApplicationController
     end
     authorize @queue_image
     respond_to do |format|
-      format.html { render :new}
+      format.html { render :new }
       format.js
     end
   end
@@ -163,6 +163,23 @@ class QueueImagesController < ApplicationController
     end
   end
 
+  def slice_by_rectangle
+    content_image = Content.new image: params[:original_image][:image]
+    if content_image.save
+      topX = params[:original_image][:frame_top_x]
+      topY = params[:original_image][:frame_top_y]
+      bottomX = params[:original_image][:frame_bottom_x]
+      bottomY = params[:original_image][:frame_bottom_y]
+      puts "#{topX} #{topY}"
+      puts "#{bottomX} #{bottomY}"
+    else
+      puts content_image.errors.to_sentence
+    end
+    respond_to do |format|
+      format.json { render json: { id: content_image.id } }
+    end
+  end
+
   private
 
   def create_queue
@@ -197,7 +214,6 @@ class QueueImagesController < ApplicationController
       end
       save_status &= @queue_image.save
     end
-    byebug
     save_status
   end
 
